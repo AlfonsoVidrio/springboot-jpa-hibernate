@@ -1,5 +1,6 @@
 package com.alfonsovidrio.springboot.jpa.springboot_jpa;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -26,7 +27,10 @@ public class SpringbootJpaApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		betweenQueries();
+		// whereIn();
+		// subQueries();
+		// queriesAggregationFunctions();
+		// betweenQueries();
 		// concatUpperLowerQueries();
 		// distinctQueries();
 		// personalizeQuery2();
@@ -34,12 +38,59 @@ public class SpringbootJpaApplication implements CommandLineRunner {
 		// delete2();
 		// delete();
 		// update();
-		// create();
+		create();
 		// list();
 		// findOne();
 	}
 
+	@Transactional(readOnly = true)
+	public void whereIn() {
+		System.out.println("================ Queries where in ================");
+		List<Person> persons = repository.getPersonsByIds(Arrays.asList(1L, 2L, 6L, 8L));
+		persons.forEach(System.out::println);
+	}
 
+	@Transactional(readOnly = true)
+	public void subQueries() {
+		System.out.println("================ Queries by shorter name and length ================");
+		List<Object[]> registers = repository.getShorterName();
+		registers.forEach(reg -> System.out.println("name: " + reg[0] + " length: " + reg[1]));
+
+		System.out.println("================ Queries by last person record ================");
+		Optional<Person> optionalPerson = repository.getLastRegistration();
+		optionalPerson.ifPresentOrElse(System.out::print,() -> System.out.print("person not found"));
+	}
+
+	@Transactional(readOnly = true)
+	public void queriesAggregationFunctions() {
+		System.out.println("================ Queries with person count ================");
+		Long count = repository.getCountPerson();
+		System.out.println("Count: " + count);
+
+		System.out.println("================ Queries with person min id ================");
+		Long minId = repository.getMinId();
+		System.out.println("Min id: " + minId);
+
+		System.out.println("================ Queries with person max id ================");
+		Long maxId = repository.getMaxId();
+		System.out.println("Max id: " + maxId);
+
+		System.out.println("================ Queries with person name and length ================");
+		List<Object[]> persons = repository.getPersonNameLen();
+		persons.forEach(p -> System.out.println("Name: " + p[0] + ", Length: " + p[1]));
+
+		System.out.println("================ Queries with max person name length ================");
+		Integer maxLengthName = repository.getMaxLengthName();
+		System.out.println(maxLengthName);
+
+		System.out.println("================ Queries with min person name length ================");
+		Integer minLengthName = repository.getMinLengthName();
+		System.out.println(minLengthName);
+
+		System.out.println("================ Queries with resume aggregation functions ================");
+		Object[] resumeReg = (Object[]) repository.getResumeAggregationFunction();
+		System.out.println("min: " + resumeReg[0] + " max: " + resumeReg[1] + " sum: " + resumeReg[2] + " avg; " + resumeReg[3] + " count: " + resumeReg[4]);
+	}
 
 	@Transactional(readOnly = true)
 	public void betweenQueries() {
