@@ -10,6 +10,37 @@ import com.alfonsovidrio.springboot.jpa.springboot_jpa.dto.PersonDto;
 import com.alfonsovidrio.springboot.jpa.springboot_jpa.entities.Person;
 
 public interface PersonRepository extends CrudRepository<Person, Long>{
+    // @Query("SELECT p FROM Person p WHERE p.id NOT IN ?1")
+    @Query("SELECT p FROM Person p WHERE p.id IN ?1")
+    List<Person> getPersonsByIds(List<Long> ids);
+
+    @Query("SELECT p.name, LENGTH(p.name) FROM Person p WHERE LENGTH(p.name)=(SELECT MIN(LENGTH(p.name)) FROM Person p)")
+    List<Object[]> getShorterName();
+
+    @Query("SELECT p FROM Person p WHERE p.id = (SELECT MAX(p.id) FROM Person p)")
+    Optional<Person> getLastRegistration();
+    
+    @Query("SELECT MIN(p.id), MAX(p.id), SUM(p.id), AVG(LENGTH(p.name)), COUNT(p.id) FROM Person p")
+    Object getResumeAggregationFunction();
+
+    @Query("SELECT MAX(LENGTH(p.name)) FROM Person p")
+    Integer getMaxLengthName();
+
+    @Query("SELECT MIN(LENGTH(p.name)) FROM Person p")
+    Integer getMinLengthName();
+
+    @Query("SELECT p.name, LENGTH(p.name) FROM Person p")
+    List<Object[]> getPersonNameLen();
+
+    @Query("SELECT COUNT(p) FROM Person p")
+    Long getCountPerson();
+
+    @Query("SELECT MIN(p.id) FROM Person p")
+    Long getMinId();
+
+    @Query("SELECT MAX(p.id) FROM Person p")
+    Long getMaxId();
+
     List<Person> findAllByOrderByNameDesc();
 
     @Query("SELECT p FROM Person p ORDER BY p.name, p.lastname DESC")
